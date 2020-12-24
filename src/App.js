@@ -99,23 +99,34 @@ const AddRow = styled.div`
   font-weight: 700;
 `;
 
+/* Calculator Total Row */
+
+const TotalRow = styled.div`
+  background-color: darkgray;
+  padding: 10px 0;
+  text-align: center;
+  font-weight: 700;
+`;
+
 class App extends React.Component {
   constructor (props) {
     super(props);
 
     this.state = {
-      rowNumber: 1
+      rowNumber: 1,
+      gpa: ''
     }
 
     this.addRow = this.addRow.bind(this);
     this.additionalRows = this.additionalRows.bind(this);
+    this.calculateGPA = this.calculateGPA.bind(this);
   }
 
   addRow() {
     let newRowNumber = this.state.rowNumber;
 
     this.setState({
-      rowNumber: newRowNumber + 1
+      rowNumber: newRowNumber + 1,
     })
   }
 
@@ -124,15 +135,50 @@ class App extends React.Component {
 
     for (let i = 1; i < this.state.rowNumber; i++) {
       display.push(
-        <Row name={'Row' + (i+1)}>
-          <CourseInput name={'Course' + (i+1)} />
-          <CreditInput name={'Credit' + (i+1)} />
-          <GradeInput name={'Grade' + (i+1)} />
+        <Row key={'Row' + (i+1)}>
+          <CourseInput key={'Course' + (i+1)} id={'Course' + (i+1)} />
+          <CreditInput key={'Credit' + (i+1)} id={'Credit' + (i+1)} onChange={this.calculateGPA}/>
+          <GradeInput key={'Grade' + (i+1)} id={'Grade' + (i+1)} onChange={this.calculateGPA}/>
         </Row>
       )
     }
   
     return display;
+  }
+
+  calculateGPA() {
+    console.log();
+    let credit = document.getElementById('Credit1').value;
+    let grade = document.getElementById('Grade1').value;
+    let gradeValue;
+
+    switch(grade) {
+      case 'A':
+        gradeValue = 4;
+        break;
+      case 'B':
+        gradeValue = 3;
+        break;
+      case 'C':
+        gradeValue = 2;
+        break;
+      case 'D':
+        gradeValue = 1;
+        break;
+      case 'F':
+        gradeValue = 0;
+        break;
+      default:
+        gradeValue = 90
+    }
+
+    let newGPA = ((credit * gradeValue) / credit).toFixed(2);
+    
+    console.log(newGPA);
+
+    this.setState({
+      gpa: newGPA
+    })
   }
 
   render() {
@@ -145,18 +191,18 @@ class App extends React.Component {
             <CreditHeader>Credit Hours</CreditHeader>
             <GradeHeader>Grade</GradeHeader>
           </TableHeader>
-          <Row name="Row1">
-            <CourseInput name="Course1" />
-            <CreditInput name="Credit1" />
-            <GradeInput name="Grade1" />
+          <Row key="Row1">
+            <CourseInput key="Course1" id="Course1" />
+            <CreditInput key="Credit1" id="Credit1" onChange={this.calculateGPA}/>
+            <GradeInput key="Grade1" id="Grade1" onChange={this.calculateGPA}/>
           </Row>
           {this.additionalRows()}
           <AddRow onClick={this.addRow}>+ Add Row</AddRow>
+          <TotalRow>Overall GPA: {this.state.gpa}</TotalRow>
         </CalcContainer>
       </Body>
     )
   }
-
 }
 
 export default App;

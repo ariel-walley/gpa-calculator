@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import closeIcon from './close_icon.png';
 
 const Body = styled.div`
   height: 100%;
@@ -68,6 +69,7 @@ const Row = styled.div`
   display: flex;
   flex-wrap: no-wrap;
   align-items: center;
+  justify-content: center;
 `;
 
 const Input = styled.input`
@@ -100,6 +102,12 @@ const AddRow = styled.div`
   font-weight: 700;
 `;
 
+const RemoveRow = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+`;
+
 /* Calculator Total Row */
 
 const TotalRow = styled.div`
@@ -115,36 +123,56 @@ class App extends React.Component {
 
     this.state = {
       rowNumber: 0,
+      rows: [(
+        <Row key={'Row0'}>
+          <CourseInput key={'Course0'} id={'Course0'} />
+          <CreditInput key={'Credit0'} id={'Credit0'} onChange={this.calculateGPA}/>
+          <GradeInput key={'Grade0'} id={'Grade0'} onChange={this.calculateGPA}/>
+          <RemoveRow src={closeIcon} alt="X-shaped close button" onClick={this.removeRow}/>
+        </Row>
+
+      )],
       gpa: ''
     }
 
     this.addRow = this.addRow.bind(this);
-    this.additionalRows = this.additionalRows.bind(this);
     this.calculateGPA = this.calculateGPA.bind(this);
+    this.removeRow = this.removeRow.bind(this);
   }
 
   addRow() {
-    let newRowNumber = this.state.rowNumber;
+    let rowNumber = this.state.rowNumber;
+    let newDisplay = this.state.rows.slice();
+
+    newDisplay.push(
+      <Row key={'Row' + (rowNumber + 1)}>
+        <CourseInput key={'Course' + (rowNumber + 1)} id={'Course' + (rowNumber + 1)} />
+        <CreditInput key={'Credit' + (rowNumber + 1)} id={'Credit' + (rowNumber + 1)} onChange={this.calculateGPA}/>
+        <GradeInput key={'Grade' + (rowNumber + 1)} id={'Grade' + (rowNumber + 1)} onChange={this.calculateGPA}/>
+        <RemoveRow src={closeIcon} alt="X-shaped close button" onClick={this.removeRow}/>
+      </Row>
+    );
+
+    console.log('start');
+    console.log(rowNumber);
+    console.log(newDisplay);
+
+    let newRowNumber = rowNumber + 1
+    
 
     this.setState({
-      rowNumber: newRowNumber + 1,
+      rows: newDisplay
+    }, () => {
+      this.setState({
+        rowNumber: newRowNumber
+      })
     })
+
+    console.log(newRowNumber);
   }
 
-  additionalRows() {
-    let display = [];
-
-    for (let i = 0; i < this.state.rowNumber; i++) {
-      display.push(
-        <Row key={'Row' + i}>
-          <CourseInput key={'Course' + (i + 1)} id={'Course' + (i + 1)} />
-          <CreditInput key={'Credit' + (i + 1)} id={'Credit' + (i + 1)} onChange={this.calculateGPA}/>
-          <GradeInput key={'Grade' + (i + 1)} id={'Grade' + (i + 1)} onChange={this.calculateGPA}/>
-        </Row>
-      )
-    }
-  
-    return display;
+  removeRow() {
+    //how to handle state and removing the rows? 
   }
 
   calculateGPA() {
@@ -208,12 +236,7 @@ class App extends React.Component {
             <CreditHeader>Credit Hours</CreditHeader>
             <GradeHeader>Grade</GradeHeader>
           </TableHeader>
-          <Row key="Row1">
-            <CourseInput key="Course0" id="Course0" />
-            <CreditInput key="Credit0" id="Credit0" onChange={this.calculateGPA}/>
-            <GradeInput key="Grade0" id="Grade0" onChange={this.calculateGPA}/>
-          </Row>
-          {this.additionalRows()}
+          {this.state.rows}
           <AddRow onClick={this.addRow}>+ Add Row</AddRow>
           <TotalRow>Overall GPA: {this.state.gpa}</TotalRow>
         </CalcContainer>

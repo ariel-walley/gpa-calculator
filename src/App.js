@@ -124,11 +124,15 @@ class App extends React.Component {
     this.state = {
       rowNumber: 0,
       rows: [(
-        <Row key={'Row0'}>
+        <Row key={'Row0'} id={'Row0'}>
           <CourseInput key={'Course0'} id={'Course0'} />
           <CreditInput key={'Credit0'} id={'Credit0'} onChange={this.calculateGPA}/>
           <GradeInput key={'Grade0'} id={'Grade0'} onChange={this.calculateGPA}/>
-          <RemoveRow src={closeIcon} alt="X-shaped close button" onClick={this.removeRow}/>
+          <RemoveRow 
+            src={closeIcon} 
+            alt="X-shaped close button" 
+            id={'Icon0'} 
+            onClick={this.removeRow}/>
         </Row>
 
       )],
@@ -141,25 +145,22 @@ class App extends React.Component {
   }
 
   addRow() {
-    let rowNumber = this.state.rowNumber;
+    let newRowNumber = this.state.rowNumber + 1;
     let newDisplay = this.state.rows.slice();
 
     newDisplay.push(
-      <Row key={'Row' + (rowNumber + 1)}>
-        <CourseInput key={'Course' + (rowNumber + 1)} id={'Course' + (rowNumber + 1)} />
-        <CreditInput key={'Credit' + (rowNumber + 1)} id={'Credit' + (rowNumber + 1)} onChange={this.calculateGPA}/>
-        <GradeInput key={'Grade' + (rowNumber + 1)} id={'Grade' + (rowNumber + 1)} onChange={this.calculateGPA}/>
-        <RemoveRow src={closeIcon} alt="X-shaped close button" onClick={this.removeRow}/>
+      <Row key={'Row' + (newRowNumber)} id={'Row' + (newRowNumber)}>
+        <CourseInput key={'Course' + (newRowNumber)} id={'Course' + (newRowNumber)} />
+        <CreditInput key={'Credit' + (newRowNumber)} id={'Credit' + (newRowNumber)} onChange={this.calculateGPA}/>
+        <GradeInput key={'Grade' + (newRowNumber)} id={'Grade' + (newRowNumber)} onChange={this.calculateGPA}/>
+        <RemoveRow 
+          src={closeIcon} 
+          alt="X-shaped close button" 
+          id={'Icon' + (newRowNumber)} 
+          onClick={this.removeRow}/>
       </Row>
     );
-
-    console.log('start');
-    console.log(rowNumber);
-    console.log(newDisplay);
-
-    let newRowNumber = rowNumber + 1
-    
-
+  
     this.setState({
       rows: newDisplay
     }, () => {
@@ -167,12 +168,26 @@ class App extends React.Component {
         rowNumber: newRowNumber
       })
     })
-
-    console.log(newRowNumber);
   }
 
-  removeRow() {
-    //how to handle state and removing the rows? 
+  removeRow(e) {    
+    let id = 'Row' + e.target.id.slice(4);
+    let currentState = [...this.state.rows];
+    let index;
+
+    for (let i = 0; i < currentState.length; i++) {
+      if (currentState[i].props.id === id) {
+        index = i;
+      }
+    }
+   
+    currentState.splice(index, 1);
+    
+    this.setState({
+      rows: currentState
+    }, () => {
+      console.log('state set!');
+    });
   }
 
   calculateGPA() {

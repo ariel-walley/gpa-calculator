@@ -123,78 +123,72 @@ class App extends React.Component {
 
     this.state = {
       rowNumber: 0,
-      rows: [(
-        <Row key={'Row0'} id={'Row0'}>
-          <CourseInput key={'Course0'} id={'Course0'} />
-          <CreditInput key={'Credit0'} id={'Credit0'} onChange={this.calculateGPA}/>
-          <GradeInput key={'Grade0'} id={'Grade0'} onChange={this.calculateGPA}/>
-          <RemoveRow 
-            src={closeIcon} 
-            alt="X-shaped close button" 
-            id={'Icon0'} 
-            onClick={this.removeRow}/>
-        </Row>
-
-      )],
+      rows: [0],
       gpa: ''
-    }
+    };
 
+    this.renderRows = this.renderRows.bind(this);
     this.addRow = this.addRow.bind(this);
-    this.calculateGPA = this.calculateGPA.bind(this);
     this.removeRow = this.removeRow.bind(this);
+    this.calculateGPA = this.calculateGPA.bind(this);    
+  }
+
+  renderRows(){
+    let display = [];
+    this.state.rows.forEach((id) => {
+      display.push(
+        <Row key={'Row' + id} id={'Row' + id}>
+        <CourseInput key={'Course' + id} id={'Course' + id} />
+        <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
+        <GradeInput key={'Grade' + id} id={'Grade' + id} onChange={this.calculateGPA}/>
+        <RemoveRow 
+          src={closeIcon} 
+          alt="X-shaped close button" 
+          id={'Icon' + id} 
+          onClick={this.removeRow}/>
+      </Row>
+      )
+    });
+    return display;
   }
 
   addRow() {
     let newRowNumber = this.state.rowNumber + 1;
-    let newDisplay = this.state.rows.slice();
+    let newRows = this.state.rows;
 
-    newDisplay.push(
-      <Row key={'Row' + (newRowNumber)} id={'Row' + (newRowNumber)}>
-        <CourseInput key={'Course' + (newRowNumber)} id={'Course' + (newRowNumber)} />
-        <CreditInput key={'Credit' + (newRowNumber)} id={'Credit' + (newRowNumber)} onChange={this.calculateGPA}/>
-        <GradeInput key={'Grade' + (newRowNumber)} id={'Grade' + (newRowNumber)} onChange={this.calculateGPA}/>
-        <RemoveRow 
-          src={closeIcon} 
-          alt="X-shaped close button" 
-          id={'Icon' + (newRowNumber)} 
-          onClick={this.removeRow}/>
-      </Row>
-    );
-  
+    newRows.push(newRowNumber);
+
     this.setState({
-      rows: newDisplay
-    }, () => {
-      this.setState({
-        rowNumber: newRowNumber
-      })
-    })
-  }
-
-  removeRow(e) {    
-    let id = 'Row' + e.target.id.slice(4);
-    let currentState = [...this.state.rows];
-    let index;
-
-    for (let i = 0; i < currentState.length; i++) {
-      if (currentState[i].props.id === id) {
-        index = i;
-      }
-    }
-   
-    currentState.splice(index, 1);
-    
-    this.setState({
-      rows: currentState
-    }, () => {
-      console.log('state set!');
+      rows: newRows,
+      rowNumber: newRowNumber
     });
   }
 
+  removeRow(e) {   
+    let id = parseInt(e.target.id.slice(4));
+    console.log(id);
+    let currentRows = this.state.rows;
+    console.log(currentRows);
+
+    let index = currentRows.indexOf(id);
+    console.log(index);
+
+    if (index > -1) {
+      currentRows.splice(index, 1);
+    }
+
+    console.log(currentRows);
+
+    this.setState({
+      rows: currentRows
+    })
+  }
+ 
   calculateGPA() {
     let gpaPoints = 0;
-    let creditSum = 0;
+    let creditSum = 0; 
 
-    for (let i = 0; i < this.state.rowNumber + 1; i++) {
+    for (let i = 0; i < this.state.rows.length; i++) {
       let rowCredit = parseFloat(document.getElementById('Credit' + i).value);
       let rowGrade = document.getElementById('Grade' + i).value;
       
@@ -251,7 +245,7 @@ class App extends React.Component {
             <CreditHeader>Credit Hours</CreditHeader>
             <GradeHeader>Grade</GradeHeader>
           </TableHeader>
-          {this.state.rows}
+          {this.renderRows()}
           <AddRow onClick={this.addRow}>+ Add Row</AddRow>
           <TotalRow>Overall GPA: {this.state.gpa}</TotalRow>
         </CalcContainer>

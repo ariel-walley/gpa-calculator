@@ -166,18 +166,13 @@ class App extends React.Component {
 
   removeRow(e) {   
     let id = parseInt(e.target.id.slice(4));
-    console.log(id);
     let currentRows = this.state.rows;
-    console.log(currentRows);
 
     let index = currentRows.indexOf(id);
-    console.log(index);
 
     if (index > -1) {
       currentRows.splice(index, 1);
     }
-
-    console.log(currentRows);
 
     this.setState({
       rows: currentRows
@@ -186,48 +181,43 @@ class App extends React.Component {
  
   calculateGPA() {
     let gpaPoints = 0;
-    let creditSum = 0; 
+    let creditSum = 0;
 
-    for (let i = 0; i < this.state.rows.length; i++) {
-      let rowCredit = parseFloat(document.getElementById('Credit' + i).value);
-      let rowGrade = document.getElementById('Grade' + i).value;
-      
-      let gradeValue = 0;
+    this.state.rows.forEach((id) => {
+      let rowCredit = parseFloat(document.getElementById('Credit' + id).value);
+      let rowGrade = document.getElementById('Grade' + id).value;
 
-      switch(rowGrade) {
-        case 'A':
-          gradeValue = 4;
-          break;
-        case 'B':
-          gradeValue = 3;
-          break;
-        case 'C':
-          gradeValue = 2;
-          break;
-        case 'D':
-          gradeValue = 1;
-          break;
-        case 'F':
-          gradeValue = 0;
-          break;
-        default:
-          gradeValue = 'Error'
+      if (rowCredit && rowGrade) {
+        let gradeValue = 0;
+
+        switch(rowGrade) {
+          case 'A':
+            gradeValue = 4;
+            break;
+          case 'B':
+            gradeValue = 3;
+            break;
+          case 'C':
+            gradeValue = 2;
+            break;
+          case 'D':
+            gradeValue = 1;
+            break;
+          case 'F':
+            gradeValue = 0;
+            break;
+          default:
+            gradeValue = 'Error'
+        }
+
+        if (gradeValue !== 'Error') {
+          let coursePoints = rowCredit * gradeValue;
+          gpaPoints = gpaPoints + coursePoints;
+          creditSum = creditSum + rowCredit;
+        }
       }
-
-      if (rowCredit === null || isNaN(rowCredit)) {
-        console.log(`Error with ${'Credit' + i}`);
-        return;
-      } else if ( gradeValue === null || isNaN(gradeValue)) {
-        console.log(`Error with ${'Grade' + i}`);
-        return;
-      } else {
-        let rowGpaPoints = rowCredit * gradeValue;
-        
-        gpaPoints = gpaPoints + rowGpaPoints;
-        creditSum = creditSum + rowCredit;
-      }
-    }
-
+    })
+    
     let newGPA = (gpaPoints/creditSum).toFixed(2);
     
     this.setState({

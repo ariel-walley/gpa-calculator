@@ -176,6 +176,16 @@ const SpacerHeader = styled(HeaderText)`
   width: 18px;
 `;
 
+/* Calculator Semesters */
+
+const SemesterTitle = styled.h1`
+  margin: 5px;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: left;
+`;
+
 /* Calculator Row */
 
 const Row = styled.div`
@@ -211,17 +221,25 @@ const GradeInput = styled(Input)`
 `;
 
 /* Calculator Add Row */
+const AddContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: lightgrey;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+`;
 
 const AddRow = styled.div`
-  background-color: lightgrey;
-  margin: 0;
-  padding: 7px 0;
+  margin: 5px 10px;
+  padding: 0;
   text-align: center;
   font-size: 14px;
   font-weight: 700;
 `;
 
-const RemoveRow = styled.img`
+const RemoveIcon = styled.img`
   margin: 0 5px;
   padding: 0;
   width: 20px;
@@ -244,9 +262,15 @@ class App extends React.Component {
 
     this.state = {
       settings: true,
-      semesters: true,
+      showSemesters: true,
       rowNumber: 0,
-      rows: [0],
+      semesterNumber: 0,
+      semesters: {
+        s0: {
+          name: "Semester 1",
+          rows: [0]
+        }
+      },
       gpa: ''
     };
 
@@ -254,6 +278,7 @@ class App extends React.Component {
     this.showSettings = this.showSettings.bind(this);
     this.toggleSemesters = this.toggleSemesters.bind(this);
     this.renderRows = this.renderRows.bind(this);
+    this.addSemester = this.addSemester.bind(this);
     this.addRow = this.addRow.bind(this);
     this.removeRow = this.removeRow.bind(this);
     this.calculateGPA = this.calculateGPA.bind(this);    
@@ -269,7 +294,7 @@ class App extends React.Component {
         <SettingsContainer>
           <SettingRow>
             <SettingText>Group by semester</SettingText>
-            <IOSSwitch checked={this.state.semesters} onChange={this.toggleSemesters} name="checkSemesters" />
+            <IOSSwitch checked={this.state.showSemesters} onChange={this.toggleSemesters} name="checkSemesters" />
           </SettingRow>
           <SettingRow>
             <SettingText>Default classes per semester</SettingText>
@@ -283,37 +308,82 @@ class App extends React.Component {
   }
 
   toggleSemesters(){
-    this.setState({ semesters: !this.state.semesters});
+    this.setState({ showSemesters: !this.state.showSemesters});
   }
 
   renderRows(){
-    let display = [];
-    this.state.rows.forEach((id) => {
-      display.push(
-        <Row key={'Row' + id} id={'Row' + id}>
-        <CourseInput key={'Course' + id} id={'Course' + id} />
-        <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
-        <GradeInput key={'Grade' + id} id={'Grade' + id} onChange={this.calculateGPA}/>
-        <RemoveRow 
-          src={closeIcon} 
-          alt="X-shaped close button" 
-          id={'Icon' + id} 
-          onClick={this.removeRow}/>
-      </Row>
-      )
+    if (this.state.showSemesters === true) {
+      let display = [];
+
+      Object.keys(this.state.semesters).forEach((sem) => {
+        display.push(<SemesterTitle>{this.state.semesters[sem].name}</SemesterTitle>);
+        this.state.semesters[sem].rows.forEach((id) => {
+          display.push(
+            <Row key={'Row' + id} id={'Row' + id}>
+              <CourseInput key={'Course' + id} id={'Course' + id} />
+              <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
+              <GradeInput key={'Grade' + id} id={'Grade' + id} onChange={this.calculateGPA}/>
+              <RemoveIcon
+                src={closeIcon} 
+                alt="X-shaped close button" 
+                id={'Icon' + id} 
+                onClick={this.removeRow}/>
+            </Row>)
+        })
+      })
+
+      return display;
+    } else {
+      let display = [];
+      
+      Object.keys(this.state.semesters).forEach((sem) => {
+        this.state.semesters[sem].rows.forEach((id) => {
+          display.push(
+            <Row key={'Row' + id} id={'Row' + id}>
+              <CourseInput key={'Course' + id} id={'Course' + id} />
+              <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
+              <GradeInput key={'Grade' + id} id={'Grade' + id} onChange={this.calculateGPA}/>
+              <RemoveIcon
+                src={closeIcon} 
+                alt="X-shaped close button" 
+                id={'Icon' + id} 
+                onClick={this.removeRow}/>
+            </Row>)
+        })
+      })
+
+      return display;
+    }
+
+  }
+
+  addSemester() {
+    console.log('clicked');
+    let newSemesterNumber = this.state.semesterNumber + 1;
+    let semesterObject = this.state.semesters;
+
+    semesterObject['s' + newSemesterNumber] = {
+      name: "Semester " + (newSemesterNumber + 1),
+      rows: []
+    }
+
+    this.setState({
+      semesterNumber: newSemesterNumber,
+      semesters: semesterObject      
     });
-    return display;
   }
 
   addRow() {
     let newRowNumber = this.state.rowNumber + 1;
-    let newRows = this.state.rows;
+    let semesterObject = this.state.semesters;
 
-    newRows.push(newRowNumber);
+    console.log(semesterObject);
+
+    semesterObject.s0.rows.push(newRowNumber);
 
     this.setState({
-      rows: newRows,
-      rowNumber: newRowNumber
+      rowNumber: newRowNumber,
+      semester: semesterObject
     });
   }
 
@@ -398,7 +468,10 @@ class App extends React.Component {
             <SpacerHeader/>
           </TableHeader>
           {this.renderRows()}
-          <AddRow onClick={this.addRow}>+ Add Row</AddRow>
+          <AddContainer>
+            { this.state.showSemesters === true ? <AddRow onClick={this.addSemester}>+ Add Semester</AddRow> : <div></div>}
+            <AddRow onClick={this.addRow}>+ Add Row</AddRow>
+          </AddContainer>
           <TotalRow>Overall GPA: {this.state.gpa}</TotalRow>
         </CalcContainer>
       </Body>

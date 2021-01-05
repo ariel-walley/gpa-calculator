@@ -264,6 +264,7 @@ class App extends React.Component {
       settings: true,
       showSemesters: true,
       rowNumber: 0,
+      semesterLoad: 5,
       semesterNumber: 0,
       semesters: {
         s0: {
@@ -277,6 +278,7 @@ class App extends React.Component {
     this.toggleSettings = this.toggleSettings.bind(this);
     this.showSettings = this.showSettings.bind(this);
     this.toggleSemesters = this.toggleSemesters.bind(this);
+    this.setSemesterLoad = this.setSemesterLoad.bind(this);
     this.renderRows = this.renderRows.bind(this);
     this.addSemester = this.addSemester.bind(this);
     this.addRow = this.addRow.bind(this);
@@ -298,7 +300,7 @@ class App extends React.Component {
           </SettingRow>
           <SettingRow>
             <SettingText>Default classes per semester</SettingText>
-            <SettingInput/>
+            <SettingInput defaultValue={this.state.semesterLoad} onChange={this.setSemesterLoad}/>
           </SettingRow>
         </SettingsContainer>
       )
@@ -311,12 +313,26 @@ class App extends React.Component {
     this.setState({ showSemesters: !this.state.showSemesters});
   }
 
+  setSemesterLoad(e) {
+    let load = e.target.value;
+    
+    if (load) {
+      if (load > 0 && load < 13) {
+        this.setState({
+          semesterLoad: load
+        })
+      } else {
+        console.log('Error! Please enter valid load between 1 and 12.') //Will later create an error message
+      }
+    }  
+  }
+
   renderRows(){
     if (this.state.showSemesters === true) {
       let display = [];
 
       Object.keys(this.state.semesters).forEach((sem) => {
-        display.push(<SemesterTitle>{this.state.semesters[sem].name}</SemesterTitle>);
+        display.push(<SemesterTitle key={sem}>{this.state.semesters[sem].name}</SemesterTitle>);
         this.state.semesters[sem].rows.forEach((id) => {
           display.push(
             <Row key={'Row' + id} id={'Row' + id}>
@@ -358,26 +374,32 @@ class App extends React.Component {
   }
 
   addSemester() {
-    console.log('clicked');
     let newSemesterNumber = this.state.semesterNumber + 1;
     let semesterObject = this.state.semesters;
+    let newRowNumber = this.state.rowNumber;
+
+    let rows = [];
+
+    for (let i = 0; i < parseInt(this.state.semesterLoad); i++) {
+      newRowNumber++;
+      rows.push(newRowNumber);
+    }
 
     semesterObject['s' + newSemesterNumber] = {
       name: "Semester " + (newSemesterNumber + 1),
-      rows: []
+      rows: rows
     }
 
     this.setState({
       semesterNumber: newSemesterNumber,
-      semesters: semesterObject      
+      semesters: semesterObject,
+      rowNumber: newRowNumber      
     });
   }
 
   addRow() {
     let newRowNumber = this.state.rowNumber + 1;
     let semesterObject = this.state.semesters;
-
-    console.log(semesterObject);
 
     semesterObject.s0.rows.push(newRowNumber);
 

@@ -411,17 +411,27 @@ class App extends React.Component {
 
   removeRow(e) {   
     let id = parseInt(e.target.id.slice(4));
-    let currentRows = this.state.rows;
+    let semesterObject = this.state.semesters;
+    let semester = '';
+    let index = -1;
 
-    let index = currentRows.indexOf(id);
+    Object.keys(this.state.semesters).forEach((sem) => {
+      this.state.semesters[sem].rows.forEach((row) => {
+        if (row === id) {
+          semester = sem
+          index = semesterObject[sem].rows.indexOf(row);
 
-    if (index > -1) {
-      currentRows.splice(index, 1);
-    }
-
-    this.setState({
-      rows: currentRows
+          if (index > -1) {
+            semesterObject[sem].rows.splice(index, 1);
+          }
+        }
+      })
     })
+    
+    this.setState({
+      semesters: semesterObject
+    })
+
     this.calculateGPA();
   }
  
@@ -429,39 +439,41 @@ class App extends React.Component {
     let gpaPoints = 0;
     let creditSum = 0;
 
-    this.state.rows.forEach((id) => {
-      let rowCredit = parseFloat(document.getElementById('Credit' + id).value);
-      let rowGrade = document.getElementById('Grade' + id).value;
+    Object.keys(this.state.semesters).forEach((sem) => {
+      this.state.semesters[sem].rows.forEach((id) => {
+        let rowCredit = parseFloat(document.getElementById('Credit' + id).value);
+        let rowGrade = document.getElementById('Grade' + id).value;
 
-      if (rowCredit && rowGrade) {
-        let gradeValue = 0;
-
-        switch(rowGrade) {
-          case 'A':
-            gradeValue = 4;
-            break;
-          case 'B':
-            gradeValue = 3;
-            break;
-          case 'C':
-            gradeValue = 2;
-            break;
-          case 'D':
-            gradeValue = 1;
-            break;
-          case 'F':
-            gradeValue = 0;
-            break;
-          default:
-            gradeValue = 'Error'
+        if (rowCredit && rowGrade) {
+          let gradeValue = 0;
+  
+          switch(rowGrade) {
+            case 'A':
+              gradeValue = 4;
+              break;
+            case 'B':
+              gradeValue = 3;
+              break;
+            case 'C':
+              gradeValue = 2;
+              break;
+            case 'D':
+              gradeValue = 1;
+              break;
+            case 'F':
+              gradeValue = 0;
+              break;
+            default:
+              gradeValue = 'Error'
+          }
+  
+          if (gradeValue !== 'Error') {
+            let coursePoints = rowCredit * gradeValue;
+            gpaPoints = gpaPoints + coursePoints;
+            creditSum = creditSum + rowCredit;
+          }
         }
-
-        if (gradeValue !== 'Error') {
-          let coursePoints = rowCredit * gradeValue;
-          gpaPoints = gpaPoints + coursePoints;
-          creditSum = creditSum + rowCredit;
-        }
-      }
+      })
     })
     
     let newGPA = (gpaPoints/creditSum).toFixed(2);

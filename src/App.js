@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import closeIcon from './close_icon.png';
+import { withStyles } from '@material-ui/core/styles';
+import Switch from '@material-ui/core/Switch';
+import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
+
 
 const Body = styled.div`
   height: 100%;
@@ -13,6 +17,8 @@ const Body = styled.div`
   flex-direction: column;
 `;
 
+/* Webpage Header */
+
 const Header = styled.h1`
   width: 100%;
   margin: 0 auto;
@@ -24,8 +30,110 @@ const Header = styled.h1`
   text-align: center;  
 `;
 
+/* Settings */
+const SettingsHeader = styled.div`
+  background-color: darkgray;
+  margin-top: 30px;
+  padding: 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
+const SettingsTitle = styled.h1`
+  margin: 0;
+  padding: 0;
+  font-size: 17px;
+  font-weight: 700;
+`;
+
+const SettingsContainer = styled.div`
+  display: flex;
+  background-color: lightgrey;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+`;
+
+const SettingRow = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 250px;
+  margin: 0;
+  padding: 0;
+`;
+
+const SettingText = styled.div`
+  margin: 0;
+  padding: 0;
+`;
+
+const SettingInput = styled.input`
+  margin: 0;
+  padding: 0;
+  width: 15px;
+`;
+
+const IOSSwitch = withStyles((theme) => ({
+  root: {
+    width: 42,
+    height: 26,
+    padding: 0,
+    margin: theme.spacing(1),
+  },
+  switchBase: {
+    padding: 1,
+    '&$checked': {
+      transform: 'translateX(16px)',
+      color: theme.palette.common.white,
+      '& + $track': {
+        backgroundColor: '#52d869',
+        opacity: 1,
+        border: 'none',
+      },
+    },
+    '&$focusVisible $thumb': {
+      color: '#52d869',
+      border: '6px solid #fff',
+    },
+  },
+  thumb: {
+    width: 24,
+    height: 24,
+  },
+  track: {
+    borderRadius: 26 / 2,
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.grey[50],
+    opacity: 1,
+    transition: theme.transitions.create(['background-color', 'border']),
+  },
+  checked: {},
+  focusVisible: {},
+}))(({ classes, ...props }) => {
+  return (
+    <Switch
+      focusVisibleClassName={classes.focusVisible}
+      disableRipple
+      classes={{
+        root: classes.root,
+        switchBase: classes.switchBase,
+        thumb: classes.thumb,
+        track: classes.track,
+        checked: classes.checked,
+      }}
+      {...props}
+    />
+  );
+});
+
+/* Calculator Container */
+
 const CalcContainer = styled.div`
-  margin-top: 60px;
+  margin-top: 30px;
   border: 2px solid black;
   display: flex;
   flex-direction: column;
@@ -135,15 +243,47 @@ class App extends React.Component {
     super(props);
 
     this.state = {
+      settings: true,
+      semesters: true,
       rowNumber: 0,
       rows: [0],
       gpa: ''
     };
 
+    this.toggleSettings = this.toggleSettings.bind(this);
+    this.showSettings = this.showSettings.bind(this);
+    this.toggleSemesters = this.toggleSemesters.bind(this);
     this.renderRows = this.renderRows.bind(this);
     this.addRow = this.addRow.bind(this);
     this.removeRow = this.removeRow.bind(this);
     this.calculateGPA = this.calculateGPA.bind(this);    
+  }
+
+  toggleSettings(){
+    this.setState({ settings: !this.state.settings});
+  }
+
+  showSettings() {
+    if (this.state.settings === true) {
+      return (
+        <SettingsContainer>
+          <SettingRow>
+            <SettingText>Group by semester</SettingText>
+            <IOSSwitch checked={this.state.semesters} onChange={this.toggleSemesters} name="checkSemesters" />
+          </SettingRow>
+          <SettingRow>
+            <SettingText>Default classes per semester</SettingText>
+            <SettingInput/>
+          </SettingRow>
+        </SettingsContainer>
+      )
+    } else {
+      return (<div></div>)
+    }
+  }
+
+  toggleSemesters(){
+    this.setState({ semesters: !this.state.semesters});
   }
 
   renderRows(){
@@ -245,6 +385,11 @@ class App extends React.Component {
     return(
       <Body>
         <Header>GPA Calculator</Header>
+        <SettingsHeader onClick={this.toggleSettings}>
+          <SettingsRoundedIcon/>
+          <SettingsTitle>Settings</SettingsTitle>
+        </SettingsHeader>
+          {this.showSettings()}
         <CalcContainer>
           <TableHeader>
             <CourseHeader>Course</CourseHeader>

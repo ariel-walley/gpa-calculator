@@ -178,12 +178,21 @@ const SpacerHeader = styled(HeaderText)`
 
 /* Calculator Semesters */
 
-const SemesterTitle = styled.h1`
+const SemesterHeader = styled.div`
   margin: 5px;
+  padding: 0;
+`;
+
+const SemesterTitle = styled.h1`
+  margin: 0;
   padding: 0;
   font-size: 15px;
   font-weight: 700;
   text-align: left;
+`;
+
+const SemesterInput = styled.input`
+  width: 100px;
 `;
 
 /* Calculator Row */
@@ -269,7 +278,8 @@ class App extends React.Component {
       semesters: {
         s0: {
           name: "Semester 1",
-          rows: [0]
+          rows: [0],
+          input: false
         }
       },
       menu: false,
@@ -281,6 +291,9 @@ class App extends React.Component {
     this.toggleSemesters = this.toggleSemesters.bind(this);
     this.setSemesterLoad = this.setSemesterLoad.bind(this);
     this.addSemester = this.addSemester.bind(this);
+    this.semesterInputToggle = this.semesterInputToggle.bind(this);
+    this.showSemesterInput = this.showSemesterInput.bind(this);
+    this.renameSemester = this.renameSemester.bind(this);
     this.renderRows = this.renderRows.bind(this);
     this.addRow = this.addRow.bind(this);
     this.removeRow = this.removeRow.bind(this);
@@ -344,7 +357,8 @@ class App extends React.Component {
 
     semesterObject['s' + newSemesterNumber] = {
       name: "Semester " + (newSemesterNumber + 1),
-      rows: rows
+      rows: rows,
+      input: false
     }
 
     this.setState({
@@ -354,16 +368,76 @@ class App extends React.Component {
     });
   }
 
+  semesterInputToggle(event) {
+    let index = event.target.id.indexOf('s');
+
+    if (index > -1) {
+      let semID = event.target.id.slice(index);
+
+      let semesterObject = this.state.semesters;
+
+      semesterObject[semID].input = !semesterObject[semID].input
+
+      this.setState({
+        semesters: semesterObject
+      });
+    }
+  }
+
+  showSemesterInput(sem) {
+    if (this.state.semesters[sem].input === true) {
+      return(
+        <SemesterInput key={'input' + sem} id={'input' + sem} onKeyUp={this.renameSemester}/>
+      )
+    } else {
+      return (
+        <SemesterTitle 
+          key={'title' + sem} 
+          id={'title' + sem} 
+          onClick={this.semesterInputToggle}>
+            {this.state.semesters[sem].name}
+        </SemesterTitle>
+      )
+    }
+  }
+
+  renameSemester(event) {
+    if (event.code === "Enter") {
+
+      let index = event.target.id.indexOf('s');
+      let semID = event.target.id.slice(index);
+
+      let semesterObject = this.state.semesters;
+
+      semesterObject[semID].name = event.target.value
+
+      this.setState({
+        semesters: semesterObject
+      });
+
+      this.semesterInputToggle(event);
+    }
+  }
+
   renderRows(){
     if (this.state.showSemesters === true) {
       let display = [];
 
       Object.keys(this.state.semesters).forEach((sem) => {
-        display.push(<SemesterTitle key={sem}>{this.state.semesters[sem].name}</SemesterTitle>);
+        display.push(
+          <SemesterHeader key={'header' + sem} id={'header' + sem}>
+            {this.showSemesterInput(sem)}
+          </SemesterHeader>
+        );
+
         this.state.semesters[sem].rows.forEach((id) => {
           display.push(
             <Row key={'Row' + id} id={'Row' + id}>
-              <MenuDemo semester={sem} id={id} state={this.state.semesters} handleStateChange={this.handleStateChange}/>
+              <MenuDemo 
+                semester={sem} 
+                id={id} 
+                state={this.state.semesters} 
+                handleStateChange={this.handleStateChange}/>
               <CourseInput key={'Course' + id} id={'Course' + id} />
               <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
               <GradeInput key={'Grade' + id} id={'Grade' + id} onChange={this.calculateGPA}/>
@@ -384,7 +458,11 @@ class App extends React.Component {
         this.state.semesters[sem].rows.forEach((id) => {
           display.push(
             <Row key={'Row' + id} id={'Row' + id}>
-              <MenuDemo semester={sem} id={id} state={this.state.semesters} handleStateChange={this.handleStateChange}/>
+              <MenuDemo 
+                semester={sem} 
+                id={id} 
+                state={this.state.semesters} 
+                handleStateChange={this.handleStateChange}/>
               <CourseInput key={'Course' + id} id={'Course' + id} />
               <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
               <GradeInput key={'Grade' + id} id={'Grade' + id} onChange={this.calculateGPA}/>
@@ -415,13 +493,11 @@ class App extends React.Component {
   removeRow(e) {   
     let id = parseInt(e.target.id.slice(4));
     let semesterObject = this.state.semesters;
-    let semester = '';
     let index = -1;
 
     Object.keys(this.state.semesters).forEach((sem) => {
       this.state.semesters[sem].rows.forEach((row) => {
         if (row === id) {
-          semester = sem
           index = semesterObject[sem].rows.indexOf(row);
 
           if (index > -1) {

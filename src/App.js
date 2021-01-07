@@ -34,9 +34,10 @@ const Header = styled.h1`
 const SettingsHeader = styled.div`
   background-color: darkgray;
   margin-top: 30px;
-  padding: 0;
+  padding: 5px;
+  width: 125px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
 `;
 
@@ -295,6 +296,7 @@ class App extends React.Component {
     this.showSemesterInput = this.showSemesterInput.bind(this);
     this.renameSemester = this.renameSemester.bind(this);
     this.renderRows = this.renderRows.bind(this);
+    this.addMenu = this.addMenu.bind(this);
     this.addRow = this.addRow.bind(this);
     this.removeRow = this.removeRow.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
@@ -433,11 +435,7 @@ class App extends React.Component {
         this.state.semesters[sem].rows.forEach((id) => {
           display.push(
             <Row key={'Row' + id} id={'Row' + id}>
-              <MenuDemo 
-                semester={sem} 
-                id={id} 
-                state={this.state.semesters} 
-                handleStateChange={this.handleStateChange}/>
+              {this.addMenu(sem, id)}
               <CourseInput key={'Course' + id} id={'Course' + id} />
               <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
               <GradeInput key={'Grade' + id} id={'Grade' + id} onChange={this.calculateGPA}/>
@@ -458,11 +456,6 @@ class App extends React.Component {
         this.state.semesters[sem].rows.forEach((id) => {
           display.push(
             <Row key={'Row' + id} id={'Row' + id}>
-              <MenuDemo 
-                semester={sem} 
-                id={id} 
-                state={this.state.semesters} 
-                handleStateChange={this.handleStateChange}/>
               <CourseInput key={'Course' + id} id={'Course' + id} />
               <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
               <GradeInput key={'Grade' + id} id={'Grade' + id} onChange={this.calculateGPA}/>
@@ -475,6 +468,18 @@ class App extends React.Component {
         })
       })
       return display;
+    }
+  }
+
+  addMenu(sem, id) {
+    if (Object.keys(this.state.semesters).length > 1) {
+      return (
+        <MenuDemo 
+        semester={sem} 
+        id={id} 
+        state={this.state.semesters} 
+        handleStateChange={this.handleStateChange}/>
+      )
     }
   }
 

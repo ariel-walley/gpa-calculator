@@ -4,6 +4,7 @@ import closeIcon from './close_icon.png';
 import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
+import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import MenuDemo from './MenuDemo';
 
 const Body = styled.div`
@@ -19,25 +20,44 @@ const Body = styled.div`
 
 /* Webpage Header */
 
-const Header = styled.h1`
+const MainHeader = styled.div`
   width: 100%;
-  margin: 0 auto;
-  padding: 10px;
+  padding: 0; 
+  margin: 0; 
   background-color: #0F52BA;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  flex-basis: 0;
+`;
+
+const MainHeaderSpacer = styled.div`
+  justify-center: center;
+`;
+
+const MainHeaderSpacer2 = styled(MainHeaderSpacer)`
+  justify-content: flex-end;
+`;
+
+const MainHeaderText = styled.h1`
+  margin-left: auto;
   color: white;
-  font-size: 40px;
+  font-size: 35px;
   font-weight: 700;
-  text-align: center;  
+  text-align: center;
 `;
 
 /* Settings */
 const SettingsHeader = styled.div`
   background-color: darkgray;
+  border-radius: 8px;
   margin-top: 30px;
-  padding: 5px;
-  width: 125px;
+  padding: 7px;
+  width: 100px;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
 `;
 
@@ -49,20 +69,22 @@ const SettingsTitle = styled.h1`
 `;
 
 const SettingsContainer = styled.div`
+  margin: 0;
+  padding: 5px;
+  width: 310px;
   display: flex;
   background-color: lightgrey;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
-  margin: 0;
-  padding: 0;
 `;
 
 const SettingRow = styled.div`
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  width: 250px;
+  height: 35px;
+  width: 275px;
   margin: 0;
   padding: 0;
 `;
@@ -75,7 +97,11 @@ const SettingText = styled.div`
 const SettingInput = styled.input`
   margin: 0;
   padding: 0;
-  width: 15px;
+  height: 25px;
+  width: 40px;
+  text-align: center;
+  border: 1px solid darkgray;
+  border-radius: 5px;
 `;
 
 const IOSSwitch = withStyles((theme) => ({
@@ -83,7 +109,7 @@ const IOSSwitch = withStyles((theme) => ({
     width: 42,
     height: 26,
     padding: 0,
-    margin: theme.spacing(1),
+    margin: 0
   },
   switchBase: {
     padding: 1,
@@ -130,6 +156,10 @@ const IOSSwitch = withStyles((theme) => ({
     />
   );
 });
+
+const Error = styled.div`
+  color: red;
+`;
 
 /* Calculator Container */
 
@@ -230,7 +260,7 @@ const GradeInput = styled(Input)`
   width: 90px;
 `;
 
-/* Calculator Add Row */
+/* Add Row */
 const AddContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -275,6 +305,7 @@ class App extends React.Component {
       showSemesters: true,
       semesterNumber: 0,
       semesterLoad: 5,
+      semesterLoadError: false,
       rowNumber: 0,
       semesters: {
         s0: {
@@ -304,11 +335,12 @@ class App extends React.Component {
     this.calculateGPA = this.calculateGPA.bind(this);        
   }
 
-  toggleSettings(){
+  /*    Settings    */
+  toggleSettings(){ // Toggle show and hide settings option
     this.setState({ settings: !this.state.settings});
   }
 
-  showSettings() {
+  showSettings() { // Return settings content if shown
     if (this.state.settings === true) {
       return (
         <SettingsContainer>
@@ -320,6 +352,7 @@ class App extends React.Component {
             <SettingText>Default classes per semester</SettingText>
             <SettingInput defaultValue={this.state.semesterLoad} onChange={this.setSemesterLoad}/>
           </SettingRow>
+          {this.semesterLoadError()}
         </SettingsContainer>
       )
     } else {
@@ -331,18 +364,28 @@ class App extends React.Component {
     this.setState({ showSemesters: !this.state.showSemesters});
   }
 
-  setSemesterLoad(e) {
+  /*    Semesters    */
+  setSemesterLoad(e) { // Set how many rows in a new semester
     let load = e.target.value;
     
     if (load) {
       if (load > 0 && load < 13) {
         this.setState({
-          semesterLoad: load
+          semesterLoad: load,
+          semesterLoadError: false
         })
       } else {
-        console.log('Error! Please enter valid load between 1 and 12.') //Will later create an error message
+        this.setState({
+          semesterLoadError: true
+        })
       }
     }  
+  }
+
+  semesterLoadError() {
+    if (this.state.semesterLoadError) {
+      return <Error>Please select a value betweeen 1 and 12.</Error>
+    }
   }
 
   addSemester() {
@@ -582,7 +625,15 @@ class App extends React.Component {
   render() {
     return(
       <Body>
-        <Header>GPA Calculator</Header>
+        <MainHeader>
+          <MainHeaderSpacer2/>
+          <MainHeaderSpacer>
+            <MainHeaderText>GPA Calculator</MainHeaderText>
+          </MainHeaderSpacer>
+          <MainHeaderSpacer2>
+            <MenuRoundedIcon fontSize="large"/>
+          </MainHeaderSpacer2>
+        </MainHeader>
         <SettingsHeader onClick={this.toggleSettings}>
           <SettingsRoundedIcon/>
           <SettingsTitle>Settings</SettingsTitle>

@@ -341,7 +341,7 @@ class App extends React.Component {
   }
 
   showSettings() { // Return settings content if shown
-    if (this.state.settings === true) {
+    if (this.state.settings) {
       return (
         <SettingsContainer>
           <SettingRow>
@@ -413,24 +413,8 @@ class App extends React.Component {
     });
   }
 
-  semesterInputToggle(event) {
-    let index = event.target.id.indexOf('s');
-
-    if (index > -1) {
-      let semID = event.target.id.slice(index);
-
-      let semesterObject = this.state.semesters;
-
-      semesterObject[semID].input = !semesterObject[semID].input
-
-      this.setState({
-        semesters: semesterObject
-      });
-    }
-  }
-
-  showSemesterInput(sem) {
-    if (this.state.semesters[sem].input === true) {
+  showSemesterInput(sem) { // Return either semester title or return input
+    if (this.state.semesters[sem].input) {
       return(
         <SemesterInput key={'input' + sem} id={'input' + sem} onKeyUp={this.renameSemester}/>
       )
@@ -445,33 +429,52 @@ class App extends React.Component {
       )
     }
   }
-
-  renameSemester(event) {
-    if (event.code === "Enter") {
-
-      let index = event.target.id.indexOf('s');
-      let semID = event.target.id.slice(index);
-
-      let semesterObject = this.state.semesters;
-
-      semesterObject[semID].name = event.target.value
-
-      this.setState({
-        semesters: semesterObject
-      });
+  
+  renameSemester(event) { // Rename semester
+    if (event.key === "Enter") {
+      if (event.target.value !== '') {
+        let index = event.target.id.indexOf('s');
+        let semID = event.target.id.slice(index);
+  
+        let semesterObject = this.state.semesters;
+  
+        semesterObject[semID].name = event.target.value
+  
+        this.setState({
+          semesters: semesterObject
+        });
+      }
 
       this.semesterInputToggle(event);
+    }
+  } 
+
+  semesterInputToggle(event) { // Toggle for a semester between its title and its input
+    let index = event.target.id.indexOf('s');
+    if (index > -1) {
+      let semID = event.target.id.slice(index);
+      let newInput = !this.state.semesters[semID].input;
+
+      this.setState({
+        semesters: {
+          ...this.state.semesters,
+          [semID]: {
+            ...this.state.semesters[semID],
+            input: newInput
+          }
+        }
+      })
     }
   }
 
   renderRows(){
-    if (this.state.showSemesters === true) {
+    if (this.state.showSemesters) {
       let display = [];
 
       Object.keys(this.state.semesters).forEach((sem) => {
         display.push(
           <SemesterHeader key={'header' + sem} id={'header' + sem}>
-            {this.showSemesterInput(sem)}
+            {this.showSemesterInput(sem)} 
           </SemesterHeader>
         );
 
@@ -648,7 +651,7 @@ class App extends React.Component {
           </TableHeader>
           {this.renderRows()}
           <AddContainer>
-            { this.state.showSemesters === true ? <AddRow onClick={this.addSemester}>+ Add Semester</AddRow> : <div></div>}
+            { this.state.showSemesters ? <AddRow onClick={this.addSemester}>+ Add Semester</AddRow> : <div></div>}
             <AddRow onClick={this.addRow}>+ Add Row</AddRow>
           </AddContainer>
           <TotalRow>Overall GPA: {this.state.gpa}</TotalRow>

@@ -289,11 +289,22 @@ const RemoveIcon = styled.img`
 /* Calculator Total Row */
 
 const TotalRow = styled.div`
+  height: 21px;
   background-color: darkgray;
   margin: 0;
   padding: 10px 0;
   text-align: center;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+`;
+
+const TotalRowItem = styled.div`
+  min-width: 35px;
+  margin: 0 10px;
 `;
 
 class App extends React.Component {
@@ -467,6 +478,7 @@ class App extends React.Component {
     }
   }
 
+  /*    Rows    */  
   renderRows(){
     if (this.state.showSemesters) {
       let display = [];
@@ -608,8 +620,8 @@ class App extends React.Component {
           }
   
           if (gradeValue !== 'Error') {
-            let coursePoints = rowCredit * gradeValue;
-            gpaPoints = gpaPoints + coursePoints;
+            let rowPoints = rowCredit * gradeValue;
+            gpaPoints = gpaPoints + rowPoints;
             creditSum = creditSum + rowCredit;
           }
         }
@@ -621,6 +633,10 @@ class App extends React.Component {
     if (newGPA !== 'NaN') {
       this.setState({
         gpa: newGPA
+      })
+    } else if (isNaN(newGPA)) {
+      this.setState({
+        gpa: ''
       })
     }
   }
@@ -654,7 +670,10 @@ class App extends React.Component {
             { this.state.showSemesters ? <AddRow onClick={this.addSemester}>+ Add Semester</AddRow> : <div></div>}
             <AddRow onClick={this.addRow}>+ Add Row</AddRow>
           </AddContainer>
-          <TotalRow>Overall GPA: {this.state.gpa}</TotalRow>
+          <TotalRow>
+            <TotalRowItem>Overall GPA: </TotalRowItem>
+            <TotalRowItem>{this.state.gpa}</TotalRowItem>
+          </TotalRow>
         </CalcContainer>
       </Body>
     )

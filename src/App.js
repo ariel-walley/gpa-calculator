@@ -5,7 +5,9 @@ import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
-import MenuDemo from './MenuDemo';
+import SemesterChangeMenu from './semesterChangeMenu';
+import GradeSelector from './selectGradeMenu'
+
 
 const Body = styled.div`
   height: 100%;
@@ -256,10 +258,6 @@ const CreditInput = styled(Input)`
   width: 75px;
 `;
 
-const GradeInput = styled(Input)`
-  width: 90px;
-`;
-
 /* Add Row */
 const AddContainer = styled.div`
   display: flex;
@@ -312,6 +310,9 @@ class App extends React.Component {
     super(props);
 
     this.state = {
+      grades: {
+        row0: ''
+      },
       settings: false,
       showSemesters: true,
       semesterNumber: 0,
@@ -338,11 +339,12 @@ class App extends React.Component {
     this.showSemesterInput = this.showSemesterInput.bind(this);
     this.renameSemester = this.renameSemester.bind(this);
     this.renderRows = this.renderRows.bind(this);
-    this.addMenu = this.addMenu.bind(this);
+    this.addSemesterMenu = this.addSemesterMenu.bind(this);
     this.addRow = this.addRow.bind(this);
     this.removeRow = this.removeRow.bind(this);
     this.toggleMenu = this.toggleMenu.bind(this);
-    this.handleStateChange = this.handleStateChange.bind(this);
+    this.handleSemesterChange = this.handleSemesterChange.bind(this);
+    this.handleGradeChange = this.handleGradeChange.bind(this);
     this.calculateGPA = this.calculateGPA.bind(this);        
   }
 
@@ -417,10 +419,17 @@ class App extends React.Component {
       input: false
     }
 
+    let newGrades = this.state.grades;
+
+    rows.forEach((row) => {
+      newGrades['row' + row] = ''
+    });
+    
     this.setState({
       semesterNumber: newSemesterNumber,
       semesters: semesterObject,
-      rowNumber: newRowNumber      
+      rowNumber: newRowNumber,
+      grades: newGrades      
     });
   }
 
@@ -493,10 +502,16 @@ class App extends React.Component {
         this.state.semesters[sem].rows.forEach((id) => {
           display.push(
             <Row key={'Row' + id} id={'Row' + id}>
-              {this.addMenu(sem, id)}
+              {this.addSemesterMenu(sem, id)}
               <CourseInput key={'Course' + id} id={'Course' + id} />
               <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
-              <GradeInput key={'Grade' + id} id={'Grade' + id} onChange={this.calculateGPA}/>
+              <GradeSelector
+                key={'gradeSelector' + id}
+                id={'gradeSelector' + id} 
+                row={id} 
+                function1={this.handleGradeChange}
+                function2={this.calculateGPA}
+                grades={this.state.grades}/>
               <RemoveIcon
                 src={closeIcon} 
                 alt="X-shaped close button" 
@@ -516,7 +531,6 @@ class App extends React.Component {
             <Row key={'Row' + id} id={'Row' + id}>
               <CourseInput key={'Course' + id} id={'Course' + id} />
               <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
-              <GradeInput key={'Grade' + id} id={'Grade' + id} onChange={this.calculateGPA}/>
               <RemoveIcon
                 src={closeIcon}
                 alt="X-shaped close button"
@@ -529,14 +543,14 @@ class App extends React.Component {
     }
   }
 
-  addMenu(sem, id) {
+  addSemesterMenu(sem, id) {
     if (Object.keys(this.state.semesters).length > 1) {
       return (
-        <MenuDemo 
+        <SemesterChangeMenu 
         semester={sem} 
         id={id} 
         state={this.state.semesters} 
-        handleStateChange={this.handleStateChange}/>
+        function={this.handleSemesterChange}/>
       )
     }
   }
@@ -549,7 +563,11 @@ class App extends React.Component {
 
     this.setState({
       rowNumber: newRowNumber,
-      semesters: semesterObject
+      semesters: semesterObject,
+      grades: {
+        ...this.state.grades,
+        ['row' + newRowNumber]: ''
+      }
     });
   }
 
@@ -581,9 +599,18 @@ class App extends React.Component {
     this.setState({ menu: !this.state.menu})
   } 
 
-  handleStateChange(update) {
+  handleSemesterChange(update) {
     this.setState({
       semesters: update
+    })
+  }
+
+  handleGradeChange(newGrade, rowID) {
+    this.setState({
+      grades: {
+        ...this.state.grades,
+        ['row' + rowID]: newGrade
+      }
     })
   }
 
@@ -594,7 +621,8 @@ class App extends React.Component {
     Object.keys(this.state.semesters).forEach((sem) => {
       this.state.semesters[sem].rows.forEach((id) => {
         let rowCredit = parseFloat(document.getElementById('Credit' + id).value);
-        let rowGrade = document.getElementById('Grade' + id).value;
+        let row = 'row' + id;
+        let rowGrade = this.state.grades[row];
 
         if (rowCredit && rowGrade) {
           let gradeValue = 0;

@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';  
 import MenuItem from '@material-ui/core/MenuItem';  
   
-export default function MenuDemo(props) {  
+export default function SemesterChangeMenu(props) {  
 
   const [anchorEl, open] = React.useState(null);  
   const handleClick = event => {  
@@ -33,7 +33,7 @@ export default function MenuDemo(props) {
 
         stateObject[newSemester].rows.push(rowNumber);
       
-        props.handleStateChange(stateObject);
+        props.function(stateObject);
       }
     }
     open(null);  

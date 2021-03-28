@@ -1,9 +1,11 @@
 import React from 'react';  
 import styled from 'styled-components';
+import { StylesProvider } from "@material-ui/core/styles";
 import Menu from '@material-ui/core/Menu'; 
 import MenuItem from '@material-ui/core/MenuItem';  
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
+/* Styles for the input */
 const GradeInput = styled.div`
   height: 20px;
   width: 90px;
@@ -11,9 +13,8 @@ const GradeInput = styled.div`
   padding: 0px;
   display: flex;
   flex-wrap: nowrap;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  align-content: center;
   background-color: white;
   border: 2px solid darkgray;  
   border-radius: 5px;
@@ -22,8 +23,23 @@ const GradeInput = styled.div`
 `;
   
 const InputText = styled.div`
+  position: absolute;
+`;
+
+const MenuIcon = styled(ExpandMoreIcon)`
+  margin-left: auto;
+`;
+
+/* Styles for the menu and menu items */
+
+const GradeOption = styled(MenuItem)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 0;
+  min-height: 25px;
+  width: 75px;
   text-align: center;
-  width: 100%;
 `;
 
 export default function GradeSelector (props) {  
@@ -33,13 +49,13 @@ export default function GradeSelector (props) {
     open(event.currentTarget);  
   };
 
-  const handleClose = async (event) => {
-
+  const handleClose = async (event) => { //On menu close, update state with the new grade and re-calculate the gpa
+ 
     let id = event.target.id;
 
     if (id) {
-      await props.function1(document.getElementById(id).innerHTML[0], props.row); 
-      props.function2();
+      await props.function1(document.getElementById(id).innerHTML[0], props.row); //update state
+      props.function2(); // re-calculate the gpa
     }
 
     open(null);  
@@ -50,7 +66,7 @@ export default function GradeSelector (props) {
     let display = [];
 
     grades.forEach((grade) => {
-      display.push(<MenuItem onClick={handleClose} key={'Row' + props.row + grade + "grade"} id={'Row' + props.row + grade + "grade"}>{grade}</MenuItem>)
+      display.push(<GradeOption onClick={handleClose} key={'Row' + props.row + grade + "grade"} id={'Row' + props.row + grade + "grade"}>{grade}</GradeOption>)
     });
 
     return (
@@ -69,13 +85,15 @@ export default function GradeSelector (props) {
   
   return (
     <>    
-      <div>  
-        <GradeInput aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-          <InputText>{props.grades['row' + props.row]}</InputText>
-          <ExpandMoreIcon/>
-        </GradeInput>
-        {menuOptions()}
-      </div>  
+      <StylesProvider injectFirst>
+        <div>
+          <GradeInput aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+            <InputText>{props.grades['row' + props.row]}</InputText>
+            <MenuIcon/>
+          </GradeInput>
+          {menuOptions()}
+        </div>
+      </StylesProvider>
     </>  
   );  
 }  

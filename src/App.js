@@ -1,13 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 import closeIcon from './close_icon.png';
 import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
-import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
+import MainHeader from './header.js';
 import SemesterChangeMenu from './semesterChangeMenu';
 import GradeSelector from './selectGradeMenu'
 
+
+const GlobalStyle = createGlobalStyle`
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+`;  
 
 const Body = styled.div`
   height: 100%;
@@ -18,38 +30,7 @@ const Body = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-`;
-
-/* Webpage Header */
-
-const MainHeader = styled.div`
-  width: 100%;
-  padding: 0; 
-  margin: 0; 
-  background-color: #0F52BA;
-  display: flex;
-  align-items: center;
-  align-content: center;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  flex-basis: 0;
-`;
-
-const MainHeaderSpacer = styled.div`
-  justify-center: center;
-`;
-
-const MainHeaderSpacer2 = styled(MainHeaderSpacer)`
-  justify-content: flex-end;
-`;
-
-const MainHeaderText = styled.h1`
-  margin-left: auto;
-  color: white;
-  font-size: 35px;
-  font-weight: 700;
-  text-align: center;
-`;
+`;  
 
 /* Settings */
 const SettingsHeader = styled.div`
@@ -71,8 +52,8 @@ const SettingsTitle = styled.h1`
 `;
 
 const SettingsContainer = styled.div`
-  margin: 0;
   padding: 5px;
+  border-radius: 8px;
   width: 310px;
   display: flex;
   background-color: lightgrey;
@@ -671,39 +652,34 @@ class App extends React.Component {
 
   render() {
     return(
-      <Body>
-        <MainHeader>
-          <MainHeaderSpacer2/>
-          <MainHeaderSpacer>
-            <MainHeaderText>GPA Calculator</MainHeaderText>
-          </MainHeaderSpacer>
-          <MainHeaderSpacer2>
-            <MenuRoundedIcon fontSize="large"/>
-          </MainHeaderSpacer2>
-        </MainHeader>
-        <SettingsHeader onClick={this.toggleSettings}>
-          <SettingsRoundedIcon/>
-          <SettingsTitle>Settings</SettingsTitle>
-        </SettingsHeader>
-          {this.showSettings()}
-        <CalcContainer>
-          <TableHeader>
-            <CourseHeader>Course</CourseHeader>
-            <CreditHeader>Credit Hours</CreditHeader>
-            <GradeHeader>Grade</GradeHeader>
-            <SpacerHeader/>
-          </TableHeader>
-          {this.renderRows()}
-          <AddContainer>
-            { this.state.showSemesters ? <AddRow onClick={this.addSemester}>+ Add Semester</AddRow> : <div></div>}
-            <AddRow onClick={this.addRow}>+ Add Row</AddRow>
-          </AddContainer>
-          <TotalRow>
-            <TotalRowItem>Overall GPA: </TotalRowItem>
-            <TotalRowItem>{this.state.gpa}</TotalRowItem>
-          </TotalRow>
-        </CalcContainer>
-      </Body>
+      <div>
+        <GlobalStyle/>
+        <Body>
+          <MainHeader/>
+          <SettingsHeader onClick={this.toggleSettings}>
+            <SettingsRoundedIcon/>
+            <SettingsTitle>Settings</SettingsTitle>
+          </SettingsHeader>
+            {this.showSettings()}
+          <CalcContainer>
+            <TableHeader>
+              <CourseHeader>Course</CourseHeader>
+              <CreditHeader>Credit Hours</CreditHeader>
+              <GradeHeader>Grade</GradeHeader>
+              <SpacerHeader/>
+            </TableHeader>
+            {this.renderRows()}
+            <AddContainer>
+              { this.state.showSemesters ? <AddRow onClick={this.addSemester}>+ Add Semester</AddRow> : <div></div>}
+              <AddRow onClick={this.addRow}>+ Add Row</AddRow>
+            </AddContainer>
+            <TotalRow>
+              <TotalRowItem>Overall GPA: </TotalRowItem>
+              <TotalRowItem>{this.state.gpa}</TotalRowItem>
+            </TotalRow>
+          </CalcContainer>
+        </Body>
+      </div>
     )
   }
 }

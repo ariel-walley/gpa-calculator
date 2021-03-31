@@ -5,7 +5,6 @@ import closeIcon from './close_icon.png';
 import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
-import MainHeader from './header.js';
 import SemesterChangeMenu from './semesterChangeMenu';
 import GradeSelector from './selectGradeMenu'
 
@@ -31,6 +30,28 @@ const Body = styled.div`
   justify-content: center;
   flex-direction: column;
 `;  
+
+/*  Main Header  */
+const MainHeaderWrapper = styled.div`
+  width: 100%;
+  min-height: 70px;
+  padding: 0; 
+  margin: 0; 
+  background-color: #0F52BA;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+`;
+
+const MainHeaderText = styled.h1`
+  position: absolute;
+  color: white;
+  font-size: 35px;
+  font-weight: 700;
+  text-align: center;
+`;
 
 /* Settings */
 const SettingsHeader = styled.div`
@@ -655,7 +676,9 @@ class App extends React.Component {
       <div>
         <GlobalStyle/>
         <Body>
-          <MainHeader/>
+        <MainHeaderWrapper>
+            <MainHeaderText>GPA Calculator</MainHeaderText>
+        </MainHeaderWrapper>
           <SettingsHeader onClick={this.toggleSettings}>
             <SettingsRoundedIcon/>
             <SettingsTitle>Settings</SettingsTitle>

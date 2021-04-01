@@ -1,8 +1,17 @@
 import React from 'react';  
+import styled from 'styled-components';
+import { StylesProvider } from "@material-ui/core/styles";
 import Button from '@material-ui/core/Button';  
 import Menu from '@material-ui/core/Menu';  
 import MenuItem from '@material-ui/core/MenuItem';  
   
+const StyledButton = styled(Button)`
+  min-width: 0;
+  padding: 0;
+  margin: 0 12px 0 7px;
+`;
+
+
 export default function SemesterChangeMenu(props) {  
 
   const [anchorEl, open] = React.useState(null);  
@@ -64,9 +73,11 @@ export default function SemesterChangeMenu(props) {
   
   return (
     <>    
-      <div>  
-        <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>O</Button>
+      <div> 
+      <StylesProvider injectFirst> 
+        <StyledButton aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>O</StyledButton>
         {menuOptions()}
+      </StylesProvider>
       </div>  
     </>  
   );  

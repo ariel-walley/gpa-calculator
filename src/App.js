@@ -179,7 +179,7 @@ const CalcContainer = styled.div`
 
 const TableHeader = styled.div`
   margin: 0;
-  padding: 0 10px;
+  padding: ${props => props.semesters ? "0 10px 0 30px" : "0 13px 0 5px"};
   background-color: #0F52BA;
   display: flex;
   justify-content: center;
@@ -243,6 +243,10 @@ const Row = styled.div`
   justify-content: center;
 `;
 
+const SemesterMenuPlaceholder = styled.div`
+  width: 30px;
+`;
+
 const Input = styled.input`
   margin: 0 5px;
   padding: 0px;
@@ -280,7 +284,7 @@ const AddRow = styled.div`
 `;
 
 const RemoveIcon = styled.img`
-  margin: 0 5px;
+  margin: 0 7px 0 12px;
   padding: 0;
   width: 20px;
   height: 20px;
@@ -533,6 +537,13 @@ class App extends React.Component {
             <Row key={'Row' + id} id={'Row' + id}>
               <CourseInput key={'Course' + id} id={'Course' + id} />
               <CreditInput key={'Credit' + id} id={'Credit' + id} onChange={this.calculateGPA}/>
+              <GradeSelector
+                key={'gradeSelector' + id}
+                id={'gradeSelector' + id} 
+                row={id} 
+                function1={this.handleGradeChange}
+                function2={this.calculateGPA}
+                grades={this.state.grades}/>
               <RemoveIcon
                 src={closeIcon}
                 alt="X-shaped close button"
@@ -554,7 +565,9 @@ class App extends React.Component {
         state={this.state.semesters} 
         function={this.handleSemesterChange}/>
       )
-    }
+    } else return (
+      <SemesterMenuPlaceholder/>
+    )
   }
 
   addRow() {
@@ -682,10 +695,10 @@ class App extends React.Component {
           <SettingsHeader onClick={this.toggleSettings}>
             <SettingsRoundedIcon/>
             <SettingsTitle>Settings</SettingsTitle>
-          </SettingsHeader>
+          </SettingsHeader> 
             {this.showSettings()}
           <CalcContainer>
-            <TableHeader>
+            <TableHeader semesters={this.state.showSemesters}>
               <CourseHeader>Course</CourseHeader>
               <CreditHeader>Credit Hours</CreditHeader>
               <GradeHeader>Grade</GradeHeader>

@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 import SemesterChangeMenu from './semesterChangeMenu';
-import GradeSelector from './selectGradeMenu'
+import GradeSelector from './selectGradeMenu';
 
 
 const GlobalStyle = createGlobalStyle`
@@ -73,9 +73,10 @@ const SettingsTitle = styled.h1`
 `;
 
 const SettingsContainer = styled.div`
+  margin-top: 15px;
   padding: 5px;
-  border-radius: 8px;
   width: 310px;
+  border-radius: 8px;
   display: flex;
   background-color: lightgrey;
   flex-direction: column;

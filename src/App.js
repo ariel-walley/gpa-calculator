@@ -1,13 +1,18 @@
 import React from 'react';
+//Import styling
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
+//Import icons
 import closeIcon from './close_icon.png';
 import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
+//Import components
 import SemesterChangeMenu from './semesterChangeMenu';
 import GradeSelector from './selectGradeMenu';
-
+//Import redux
+import { connect } from 'react-redux';
+import { toggleSettings } from './redux/actions';
 
 const GlobalStyle = createGlobalStyle`
   height: 100%;
@@ -320,7 +325,6 @@ class App extends React.Component {
       grades: {
         row0: ''
       },
-      settings: false,
       showSemesters: true,
       semesterNumber: 0,
       semesterLoad: 5,
@@ -357,11 +361,11 @@ class App extends React.Component {
 
   /*    Settings    */
   toggleSettings(){ // Toggle show and hide settings option
-    this.setState({ settings: !this.state.settings});
+    this.props.toggleSettings(!this.props.settings);
   }
 
   showSettings() { // Return settings content if shown
-    if (this.state.settings) {
+    if (this.props.settings) {
       return (
         <SettingsContainer>
           <SettingRow>
@@ -721,5 +725,15 @@ class App extends React.Component {
   }
 }
 
-export default App;
+function mapStateToProps (state) {
+  return {
+    settings: state.settings
+  };
+}
+
+const mapDispatchToProps = {
+  toggleSettings
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
 

@@ -8,8 +8,8 @@ import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
 //Import components
-import SemesterChangeMenu from './semesterChangeMenu';
-import GradeSelector from './selectGradeMenu';
+import SemesterChangeMenu from './components/semesterChangeMenu';
+import GradeSelector from './components/selectGradeMenu';
 //Import redux
 import { connect } from 'react-redux';
 import { 

@@ -22,13 +22,13 @@ export default function SemesterChangeMenu(props) {
   const handleClose = (event) => {
     let semIndex = event.target.id.indexOf('s'); 
     if (semIndex > -1) {
-      let rowNumber = parseInt(event.target.id.slice(4, semIndex));
+      let rowCount = parseInt(event.target.id.slice(4, semIndex));
       let newSemester = event.target.id.slice(semIndex);
 
       let currentSemester = ''
       Object.keys(props.state).forEach((sem) => {
         props.state[sem].rows.forEach((id) => {
-          if (id === rowNumber) {
+          if (id === rowCount) {
             currentSemester = sem;
           }
         })
@@ -36,11 +36,11 @@ export default function SemesterChangeMenu(props) {
 
       let stateObject = props.state;
       
-      let oldRowIndex = stateObject[currentSemester].rows.indexOf(rowNumber);
+      let oldRowIndex = stateObject[currentSemester].rows.indexOf(rowCount);
       if (oldRowIndex > -1) {
         stateObject[currentSemester].rows.splice(oldRowIndex, 1);
 
-        stateObject[newSemester].rows.push(rowNumber);
+        stateObject[newSemester].rows.push(rowCount);
       
         props.function(stateObject);
       }

@@ -13,8 +13,11 @@ import GradeSelector from './components/selectGradeMenu';
 //Import redux
 import { connect } from 'react-redux';
 import { 
+  incRowCount,
+  incSemesterCount,
   setGPA, 
   setSemesterLoad,
+  setSemesterLoadError,
   toggleSemesters,
   toggleSettings 
 } from './redux/actions';
@@ -330,9 +333,6 @@ class App extends React.Component {
       grades: {
         row0: ''
       },
-      semesterNumber: 0,
-      semesterLoadError: false,
-      rowNumber: 0,
       semesters: {
         s0: {
           name: "Semester 1",
@@ -397,37 +397,35 @@ class App extends React.Component {
     if (load) {
       if (load > 0 && load < 13) {
         this.props.setSemesterLoad(load);
-        this.setState({
-          semesterLoadError: false
-        })
+        if (this.props.semesterLoadError === true) {
+          this.props.setSemesterLoadError(false);
+        }
       } else {
-        this.setState({
-          semesterLoadError: true
-        })
+        this.props.setSemesterLoadError(true);
       }
     }  
   }
 
   semesterLoadError() {
-    if (this.state.semesterLoadError) {
+    if (this.props.semesterLoadError) {
       return <Error>Please select a value betweeen 1 and 12.</Error>
     }
   }
 
   addSemester() {
-    let newSemesterNumber = this.state.semesterNumber + 1;
+    let newSemesterCount = this.props.semesterCount + 1;
     let semesterObject = this.state.semesters;
-    let newRowNumber = this.state.rowNumber;
+    let newRowCount = this.props.rowCount;
 
     let rows = [];
 
     for (let i = 0; i < parseInt(this.props.semesterLoad); i++) {
-      newRowNumber++;
-      rows.push(newRowNumber);
+      newRowCount++;
+      rows.push(newRowCount);
     }
 
-    semesterObject['s' + newSemesterNumber] = {
-      name: "Semester " + (newSemesterNumber + 1),
+    semesterObject['s' + newSemesterCount] = {
+      name: "Semester " + (newSemesterCount + 1),
       rows: rows,
       input: false
     }
@@ -437,11 +435,12 @@ class App extends React.Component {
     rows.forEach((row) => {
       newGrades['row' + row] = ''
     });
+
+    this.props.incRowCount(newRowCount);
+    this.props.incSemesterCount(newSemesterCount);
     
     this.setState({
-      semesterNumber: newSemesterNumber,
       semesters: semesterObject,
-      rowNumber: newRowNumber,
       grades: newGrades      
     });
   }
@@ -578,17 +577,18 @@ class App extends React.Component {
   }
 
   addRow() {
-    let newRowNumber = this.state.rowNumber + 1;
+    let newRowCount = this.props.rowCount + 1;
     let semesterObject = this.state.semesters;
 
-    semesterObject.s0.rows.push(newRowNumber);
+    semesterObject.s0.rows.push(newRowCount);
+
+    this.props.incRowCount(newRowCount);
 
     this.setState({
-      rowNumber: newRowNumber,
       semesters: semesterObject,
       grades: {
         ...this.state.grades,
-        ['row' + newRowNumber]: ''
+        ['row' + newRowCount]: ''
       }
     });
   }
@@ -726,15 +726,21 @@ class App extends React.Component {
 function mapStateToProps (state) {
   return {
     gpa: state.gpa,
+    rowCount: state.rowCount,
+    semesterCount: state.semesterCount,
     semesterLoad: state.semesterLoad,
+    semesterLoadError: state.semesterLoadError,
     settings: state.settings,
     showSemesters: state.showSemesters
   };
 }
 
 const mapDispatchToProps = {
+  incRowCount,
+  incSemesterCount,
   setGPA,
   setSemesterLoad,
+  setSemesterLoadError,
   toggleSemesters,
   toggleSettings
 };

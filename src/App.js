@@ -12,7 +12,12 @@ import SemesterChangeMenu from './semesterChangeMenu';
 import GradeSelector from './selectGradeMenu';
 //Import redux
 import { connect } from 'react-redux';
-import { toggleSettings } from './redux/actions';
+import { 
+  setGPA, 
+  setSemesterLoad,
+  toggleSemesters,
+  toggleSettings 
+} from './redux/actions';
 
 const GlobalStyle = createGlobalStyle`
   height: 100%;
@@ -325,9 +330,7 @@ class App extends React.Component {
       grades: {
         row0: ''
       },
-      showSemesters: true,
       semesterNumber: 0,
-      semesterLoad: 5,
       semesterLoadError: false,
       rowNumber: 0,
       semesters: {
@@ -338,13 +341,12 @@ class App extends React.Component {
         }
       },
       menu: false,
-      gpa: ''
     };
 
     this.toggleSettings = this.toggleSettings.bind(this);
     this.showSettings = this.showSettings.bind(this);
     this.toggleSemesters = this.toggleSemesters.bind(this);
-    this.setSemesterLoad = this.setSemesterLoad.bind(this);
+    this.changeSemesterLoad = this.changeSemesterLoad.bind(this);
     this.addSemester = this.addSemester.bind(this);
     this.semesterInputToggle = this.semesterInputToggle.bind(this);
     this.showSemesterInput = this.showSemesterInput.bind(this);
@@ -370,11 +372,11 @@ class App extends React.Component {
         <SettingsContainer>
           <SettingRow>
             <SettingText>Group by semester</SettingText>
-            <IOSSwitch checked={this.state.showSemesters} onChange={this.toggleSemesters} name="checkSemesters" />
+            <IOSSwitch checked={this.props.showSemesters} onChange={this.toggleSemesters} name="checkSemesters" />
           </SettingRow>
           <SettingRow>
             <SettingText>Default classes per semester</SettingText>
-            <SettingInput defaultValue={this.state.semesterLoad} onChange={this.setSemesterLoad}/>
+            <SettingInput defaultValue={this.props.semesterLoad} onChange={this.changeSemesterLoad}/>
           </SettingRow>
           {this.semesterLoadError()}
         </SettingsContainer>
@@ -385,17 +387,17 @@ class App extends React.Component {
   }
 
   toggleSemesters(){
-    this.setState({ showSemesters: !this.state.showSemesters});
+    this.props.toggleSemesters(!this.props.showSemesters);
   }
 
   /*    Semesters    */
-  setSemesterLoad(e) { // Set how many rows in a new semester
+  changeSemesterLoad(e) { // Set how many rows in a new semester
     let load = e.target.value;
     
     if (load) {
       if (load > 0 && load < 13) {
+        this.props.setSemesterLoad(load);
         this.setState({
-          semesterLoad: load,
           semesterLoadError: false
         })
       } else {
@@ -419,7 +421,7 @@ class App extends React.Component {
 
     let rows = [];
 
-    for (let i = 0; i < parseInt(this.state.semesterLoad); i++) {
+    for (let i = 0; i < parseInt(this.props.semesterLoad); i++) {
       newRowNumber++;
       rows.push(newRowNumber);
     }
@@ -500,7 +502,7 @@ class App extends React.Component {
 
   /*    Rows    */  
   renderRows(){
-    if (this.state.showSemesters) {
+    if (this.props.showSemesters) {
       let display = [];
 
       Object.keys(this.state.semesters).forEach((sem) => {
@@ -679,13 +681,9 @@ class App extends React.Component {
     let newGPA = (gpaPoints/creditSum).toFixed(2);
     
     if (newGPA !== 'NaN') {
-      this.setState({
-        gpa: newGPA
-      })
+      this.props.setGPA(newGPA);
     } else if (isNaN(newGPA)) {
-      this.setState({
-        gpa: ''
-      })
+      this.props.setGPA('');
     }
   }
 
@@ -703,7 +701,7 @@ class App extends React.Component {
           </SettingsHeader> 
             {this.showSettings()}
           <CalcContainer>
-            <TableHeader semesters={this.state.showSemesters}>
+            <TableHeader semesters={this.props.showSemesters}>
               <CourseHeader>Course</CourseHeader>
               <CreditHeader>Credit Hours</CreditHeader>
               <GradeHeader>Grade</GradeHeader>
@@ -711,12 +709,12 @@ class App extends React.Component {
             </TableHeader>
             {this.renderRows()}
             <AddContainer>
-              { this.state.showSemesters ? <AddRow onClick={this.addSemester}>+ Add Semester</AddRow> : <div></div>}
+              { this.props.showSemesters ? <AddRow onClick={this.addSemester}>+ Add Semester</AddRow> : <div></div>}
               <AddRow onClick={this.addRow}>+ Add Row</AddRow>
             </AddContainer>
             <TotalRow>
               <TotalRowItem>Overall GPA: </TotalRowItem>
-              <TotalRowItem>{this.state.gpa}</TotalRowItem>
+              <TotalRowItem>{this.props.gpa}</TotalRowItem>
             </TotalRow>
           </CalcContainer>
         </Body>
@@ -727,11 +725,17 @@ class App extends React.Component {
 
 function mapStateToProps (state) {
   return {
-    settings: state.settings
+    gpa: state.gpa,
+    semesterLoad: state.semesterLoad,
+    settings: state.settings,
+    showSemesters: state.showSemesters
   };
 }
 
 const mapDispatchToProps = {
+  setGPA,
+  setSemesterLoad,
+  toggleSemesters,
   toggleSettings
 };
 

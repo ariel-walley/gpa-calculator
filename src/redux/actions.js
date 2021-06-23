@@ -1,7 +1,4 @@
-export const incRowCount = (content) => ({
-  type: 'INCREASE_ROW_COUNT',
-  payload: content
-})
+
 
 export const incSemesterCount = (content) => ({
   type: 'INCREASE_SEMESTER_COUNT',

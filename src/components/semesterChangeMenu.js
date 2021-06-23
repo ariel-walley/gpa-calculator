@@ -11,7 +11,6 @@ const StyledButton = styled(Button)`
   margin: 0 12px 0 7px;
 `;
 
-
 export default function SemesterChangeMenu(props) {  
 
   const [anchorEl, open] = React.useState(null);  

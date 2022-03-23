@@ -14,7 +14,7 @@ import Switch from '@material-ui/core/Switch';
 
 
 /*  MAIN HEADER  */
-const MainHeaderWrapper = styled.div`
+const MainHeaderWrapper = styled.header`
   width: 100%;
   min-height: 70px;
   padding: 0; 

@@ -182,7 +182,7 @@ const Error = styled.div`
 
 /* Calculator Container */
 
-const CalcContainer = styled.div`
+const CalcContainer = styled.main`
   margin-top: 30px;
   border: 2px solid black;
   display: flex;

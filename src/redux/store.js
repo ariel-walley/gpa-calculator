@@ -1,9 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit';
-import rowCountReducer from './slices';
+
+import GPAReducer from '../redux/gpaSlice';
+import GradesReducer from '../redux/gradesSlice';
+import SemesterLoadReducer from '../redux/semesterLoadSlice';
+import SemestersReducer from '../redux/semestersSlice';
+import ToggleSemesterReducer from '../redux/toggleSemestersSlice';
 
 export default configureStore({
   reducer: {
-    rowCount: rowCountReducer,
+    gpa: GPAReducer,
+    grades: GradesReducer,
+    semesterLoad: SemesterLoadReducer,
+    semesters: SemestersReducer,
+    showSemesters: ToggleSemesterReducer
   },
-})
-
+});

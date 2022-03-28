@@ -1,4 +1,7 @@
 import React from 'react';  
+import { useSelector } from 'react-redux';
+import { selectSemesters } from '../../redux/semestersSlice';
+
 import styled from 'styled-components';
 import { StylesProvider } from "@material-ui/core/styles";
 import Button from '@material-ui/core/Button';  
@@ -11,7 +14,8 @@ const StyledButton = styled(Button)`
   margin: 0 12px 0 7px;
 `;
 
-export default function SemesterChangeMenu(props) {  
+export default function SemesterChangeMenu(props) { 
+  const semesters = useSelector(selectSemesters); 
 
   const [anchorEl, open] = React.useState(null);  
   const handleClick = event => {  
@@ -25,15 +29,15 @@ export default function SemesterChangeMenu(props) {
       let newSemester = event.target.id.slice(semIndex);
 
       let currentSemester = ''
-      Object.keys(props.state).forEach((sem) => {
-        props.state[sem].rows.forEach((id) => {
+      Object.keys(semesters).forEach((sem) => {
+        semesters[sem].rows.forEach((id) => {
           if (id === rowCount) {
             currentSemester = sem;
           }
         })
       })
 
-      let stateObject = props.state;
+      let stateObject = JSON.parse(JSON.stringify(semesters))
       
       let oldRowIndex = stateObject[currentSemester].rows.indexOf(rowCount);
       if (oldRowIndex > -1) {
@@ -50,11 +54,11 @@ export default function SemesterChangeMenu(props) {
   const menuOptions = () => {
     let display = [];
 
-    Object.keys(props.state).forEach((sem) => {
-      if (props.state[sem].name !== props.state[props.semester].name) {
-        display.push(<MenuItem onClick={handleClose} key={"Menu" + props.id + sem} id={"Menu" + props.id + sem}>{props.state[sem].name}</MenuItem>)
+    Object.keys(semesters).forEach((sem) => {
+      if (semesters[sem].name !== semesters[props.semester].name) {
+        display.push(<MenuItem onClick={handleClose} key={"Menu" + props.id + sem} id={"Menu" + props.id + sem}>{semesters[sem].name}</MenuItem>)
       }
-    });
+  });
 
     return (
       <Menu  

@@ -1,7 +1,8 @@
 import React from 'react';
+import * as styles from './headerStyles';
+
 import styled from 'styled-components';
 import { StylesProvider } from "@material-ui/core/styles";
-import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -12,41 +13,10 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 
-
-/*  MAIN HEADER  */
-const MainHeaderWrapper = styled.header`
-  width: 100%;
-  min-height: 70px;
-  padding: 0; 
-  margin: 0; 
-  background-color: #0F52BA;
-  display: flex;
-  align-items: center;
-  align-content: center;
-  justify-content: center;
-  flex-wrap: nowrap;
-`;
-
-const MainHeaderText = styled.h1`
-  position: absolute;
-  color: white;
-  font-size: 35px;
-  font-weight: 700;
-  text-align: center;
-`;
-
-const MainHeaderMenu = styled(MenuRoundedIcon)`
-  padding: 0 15px;
-  font-size: 40px;
-  color: white;
-  margin-left: auto;
-`;
-
 /*  EXPANDING MENU  */
 const StyledList = styled(List)`
   width: 325px;
 `;
-
 
 /*  SETTINGS OPTIONS */
 const StyledAccordionSummary = withStyles({
@@ -150,7 +120,7 @@ const Error = styled.div`
   padding: 5px 0;
 `;
 
-export default function MainHeader (props) {  
+export default function MainHeader () {  
 
   /*  Expanding Menu  */
 
@@ -181,9 +151,9 @@ export default function MainHeader (props) {
   return(
     <>
       <StylesProvider injectFirst>
-        <MainHeaderWrapper>
-            <MainHeaderText>GPA Calculator</MainHeaderText>
-            <MainHeaderMenu onClick={toggleDrawer(true)}/>
+        <styles.MainHeaderWrapper>
+            <styles.MainHeaderText>GPA Calculator</styles.MainHeaderText>
+            <styles.MainHeaderMenu onClick={toggleDrawer(true)}/>
             <Drawer anchor={'right'} open={state.menu} onClose={toggleDrawer(false)}>
             <div
               role="presentation"
@@ -217,7 +187,7 @@ export default function MainHeader (props) {
               </StyledList>
             </div>
             </Drawer>
-        </MainHeaderWrapper>
+        </styles.MainHeaderWrapper>
       </StylesProvider>
     </>
   )

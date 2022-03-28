@@ -1,9 +1,13 @@
 import React from 'react';  
+import { useSelector } from 'react-redux';
+import { selectGrades } from '../../redux/gradesSlice';
+
 import styled from 'styled-components';
 import { StylesProvider } from "@material-ui/core/styles";
 import Menu from '@material-ui/core/Menu'; 
 import MenuItem from '@material-ui/core/MenuItem';  
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 
 /* Styles for the input */
 const GradeInput = styled.div`
@@ -43,14 +47,13 @@ const GradeOption = styled(MenuItem)`
 `;
 
 export default function GradeSelector (props) {  
-
   const [anchorEl, open] = React.useState(null);  
+  const grades = useSelector(selectGrades);
   const handleClick = event => {  
     open(event.currentTarget);  
   };
 
   const handleClose = async (event) => { //On menu close, update state with the new grade and re-calculate the gpa
- 
     let id = event.target.id;
 
     if (id) {
@@ -88,7 +91,7 @@ export default function GradeSelector (props) {
       <StylesProvider injectFirst>
         <div>
           <GradeInput aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-            <InputText>{props.grades['row' + props.row]}</InputText>
+            <InputText>{grades['row' + props.row]}</InputText>
             <MenuIcon/>
           </GradeInput>
           {menuOptions()}

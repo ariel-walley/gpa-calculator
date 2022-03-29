@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 export const toggleSemestersSlice = createSlice({
   name: 'showSemesters',
   initialState: {
-    value: {row0: ''}
+    value: true
   },
   reducers: {
     toggleSemesters: (state, action) => {

@@ -1,14 +1,15 @@
+import { useEffect } from 'react';
 import GradeSelector from './selectGradeMenu';
 import SemesterChangeMenu from './semesterChangeMenu';
+import closeIcon from '../../close_icon.png';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { updateGPA } from '../../redux/gpaSlice';
 import { selectSemesters, updateSemesters } from '../../redux/semestersSlice';
-import { selectGrades, updateGrades } from '../../redux/gradesSlice';
+import { selectGrades } from '../../redux/gradesSlice';
 import { selectShowSemesters } from '../../redux/toggleSemestersSlice';
 
 import * as styles from './rowContainerStyles';
-import closeIcon from '../../close_icon.png';
 
 function RowContainer() {
   const dispatch = useDispatch();
@@ -67,17 +68,10 @@ function RowContainer() {
     }
   }
 
-  const handleSemesterChange = (update) => {
-    dispatch(updateSemesters(update));
-  }
-
   const addSemesterMenu = (sem, id) => {
     if (Object.keys(semesters).length > 1) {
       return (
-        <SemesterChangeMenu 
-        semester={sem} 
-        id={id} 
-        function={handleSemesterChange}/>
+        <SemesterChangeMenu semester={sem} id={id}/>
       )
     } else return (
       <styles.SemesterMenuPlaceholder/>
@@ -125,7 +119,7 @@ function RowContainer() {
           }
         }
       })
-    })
+    });
 
     let newGPA = (gpaPoints/creditSum).toFixed(2);
     
@@ -136,12 +130,9 @@ function RowContainer() {
     }
   }
 
-  const handleGradeChange = (newGrade, rowID) => {
-    dispatch(updateGrades({
-      ...grades,
-      ['row' + rowID]: newGrade
-    }))
-  }
+  useEffect(() => { //Re-calculate GPA if gradeChangeMenu is updated or a row is deleted
+    calculateGPA();
+  }, [grades, semesters]);
 
   /* Row Functions */
   const removeRow = (e) => {   
@@ -186,9 +177,7 @@ function RowContainer() {
                 key={'gradeSelector' + id}
                 id={'gradeSelector' + id} 
                 row={id} 
-                function1={handleGradeChange}
-                function2={calculateGPA}
-                grades={grades}/>
+              />
               <styles.RemoveIcon
                 src={closeIcon} 
                 alt="X-shaped close button" 
@@ -208,10 +197,8 @@ function RowContainer() {
               <GradeSelector
                 key={'gradeSelector' + id}
                 id={'gradeSelector' + id} 
-                row={id} 
-                function1={handleGradeChange}
-                function2={calculateGPA}
-                grades={grades}/>
+                row={id}
+              />
               <styles.RemoveIcon
                 src={closeIcon}
                 alt="X-shaped close button"

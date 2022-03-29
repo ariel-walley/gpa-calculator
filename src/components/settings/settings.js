@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import * as styles from './settingsStyles';
-import SettingsRoundedIcon from '@material-ui/icons/SettingsRounded';
+import SettingsIcon from '@mui/icons-material/Settings';
+import IOSSwitch from './iosSwitch';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { selectShowSemesters, toggleSemesters } from '../../redux/toggleSemestersSlice';
@@ -41,7 +42,7 @@ function Settings() {
         <styles.SettingsContainer>
           <styles.SettingRow>
             <styles.SettingText>Group by semester</styles.SettingText>
-            <styles.IOSSwitch checked={showSemesters} onChange={() => dispatch(toggleSemesters(!showSemesters))} name="checkSemesters" />
+            <IOSSwitch checked={showSemesters} onChange={() => dispatch(toggleSemesters(!showSemesters))} name="checkSemesters" />
           </styles.SettingRow>
           <styles.SettingRow>
             <styles.SettingText>Default classes per semester</styles.SettingText>
@@ -58,7 +59,7 @@ function Settings() {
   return (
     <styles.SettingsMainContainer>
       <styles.SettingsHeader onClick={() => toggleSettings(!settingsDisplay)}>
-        <SettingsRoundedIcon/>
+        <SettingsIcon/>
         <styles.SettingsTitle>Settings</styles.SettingsTitle>
       </styles.SettingsHeader> 
       {showSettings()}

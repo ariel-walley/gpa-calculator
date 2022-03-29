@@ -1,27 +1,28 @@
-import React from 'react';  
-import { useSelector } from 'react-redux';
-import { selectSemesters } from '../../redux/semestersSlice';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectSemesters, updateSemesters } from '../../redux/semestersSlice';
 
 import styled from 'styled-components';
-import { StylesProvider } from "@material-ui/core/styles";
-import Button from '@material-ui/core/Button';  
-import Menu from '@material-ui/core/Menu';  
-import MenuItem from '@material-ui/core/MenuItem';  
-  
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+
 const StyledButton = styled(Button)`
   min-width: 0;
   padding: 0;
   margin: 0 12px 0 7px;
 `;
 
-export default function SemesterChangeMenu(props) { 
-  const semesters = useSelector(selectSemesters); 
+export default function SemesterChangeMenu(props) {
+  const semesters = useSelector(selectSemesters);
+  const dispatch = useDispatch(); 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
-  const [anchorEl, open] = React.useState(null);  
-  const handleClick = event => {  
-    open(event.currentTarget);  
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
-
+  
   const handleClose = (event) => {
     let semIndex = event.target.id.indexOf('s'); 
     if (semIndex > -1) {
@@ -45,11 +46,12 @@ export default function SemesterChangeMenu(props) {
 
         stateObject[newSemester].rows.push(rowCount);
       
-        props.function(stateObject);
+        dispatch(updateSemesters(stateObject));
       }
     }
-    open(null);  
-  };  
+
+    setAnchorEl(null);
+  };
 
   const menuOptions = () => {
     let display = [];
@@ -58,30 +60,33 @@ export default function SemesterChangeMenu(props) {
       if (semesters[sem].name !== semesters[props.semester].name) {
         display.push(<MenuItem onClick={handleClose} key={"Menu" + props.id + sem} id={"Menu" + props.id + sem}>{semesters[sem].name}</MenuItem>)
       }
-  });
+    });
 
-    return (
-      <Menu  
-        id={"Menu" + props.id}
-        key={"Menu" + props.id}
-        anchorEl={anchorEl}  
-        keepMounted  
-        open={Boolean(anchorEl)}  
-        onClose={handleClose}  
-      > 
-        {display}
-      </Menu>  
-    )
+    return display
   }
-  
+
   return (
-    <>    
-      <div> 
-      <StylesProvider injectFirst> 
-        <StyledButton aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>O</StyledButton>
+    <div>
+      <StyledButton
+        id="basic-button"
+        aria-controls={open ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
+      >
+        O
+      </StyledButton>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
         {menuOptions()}
-      </StylesProvider>
-      </div>  
-    </>  
-  );  
-}  
+      </Menu>
+    </div>
+  );
+}
